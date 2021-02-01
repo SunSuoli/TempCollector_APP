@@ -6,6 +6,7 @@ using Android.Widget;
 using Custom_Communiations;
 using System.Timers;
 using System;
+using System.Threading;
 
 namespace TempCollector_APP
 {
@@ -46,23 +47,39 @@ namespace TempCollector_APP
 
 
             TextView view = FindViewById<TextView>(Resource.Id.Receive);
-            Timer timer = new Timer(100);
-            timer.Elapsed += delegate
+            new Thread(new ThreadStart(() =>
             {
                 string data = "";
                 string ip = "";
                 int port;
-                RunOnUiThread(() =>
+                while (true)
                 {
-                    com.UDP_Read(out data,out ip,out port);
+                    com.UDP_Read(out data, out ip, out port);
                     if (data != "")
                     {
-                        //view.Text += DateTime.Now.ToString("yyyy年MM月dd日 HH:mm:ss") + data + "\n";
-
+                        view.Text += DateTime.Now.ToString("MM月dd日 HH:mm:ss") + data + "\n";
                     }
-                });
-            };
-            timer.Enabled = true;
+                    Thread.Sleep(100);
+                }
+            })).Start();
+
+            //System.Timers.Timer timer = new System.Timers.Timer(100);
+            //timer.Elapsed += delegate
+            //{
+            //    string data = "";
+            //    string ip = "";
+            //    int port;
+            //    RunOnUiThread(() =>
+            //    {
+            //        com.UDP_Read(out data,out ip,out port);
+            //        if (data != "")
+            //        {
+            //            view.Text += DateTime.Now.ToString("yyyy年MM月dd日 HH:mm:ss") + data + "\n";
+
+            //        }
+            //    });
+            //};
+            //timer.Enabled = true;
         }
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
         {
@@ -70,6 +87,5 @@ namespace TempCollector_APP
 
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
-
     }
 }
