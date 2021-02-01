@@ -57,7 +57,7 @@ namespace TempCollector_APP
                     com.UDP_Read(out data,out ip,out port);
                     if (data != "")
                     {
-                        //view.Text += DateTime.Now.ToString("yyyy年MM月dd日 HH:mm:ss") + data + "\n";
+                        ////view.Text += DateTime.Now.ToString("yyyy年MM月dd日 HH:mm:ss") + data + "\n";
 
                     }
                 });
