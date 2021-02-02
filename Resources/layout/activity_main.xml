@@ -16,23 +16,17 @@
     <OxyPlot.Xamarin.Android.PlotView
         android:layout_marginTop="26dp"
         android:layout_width="match_parent"
-        android:layout_height="400.0dp"
+        android:layout_height="518.9dp"
         android:id="@+id/Chart_View"
-        android:background="#ff33691e" />
+        android:background="#ff33691e"
+     />
     <Button
-        android:text="Button"
-        android:layout_marginTop="426dp"
-        android:layout_marginLeft="125dp"
-        android:layout_width="wrap_content"
+        android:text="Start"
+        android:layout_marginTop="57.5dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/Start_Stop"
+        android:height="100dp"
+        android:layout_alignParentBottom="true" 
     />
-    <Button
-        android:text="out"
-        android:layout_marginTop="426dp"
-        android:layout_marginLeft="300dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/Quiet" 
-        />
 </RelativeLayout>

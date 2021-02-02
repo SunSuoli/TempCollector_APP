@@ -10,7 +10,7 @@ using OxyPlot;
 using OxyPlot.Axes;
 using OxyPlot.Series;
 using OxyPlot.Xamarin.Android;
-
+using TempCollector;
 namespace TempCollector_APP
 {
     [Activity(Label = "@string/app_name", Theme = "@style/AppTheme", MainLauncher = true)]
@@ -35,7 +35,6 @@ namespace TempCollector_APP
             TextView view = FindViewById<TextView>(Resource.Id.Receive);
             PlotView plotview = FindViewById<PlotView>(Resource.Id.Chart_View);
             Button start= FindViewById<Button>(Resource.Id.Start_Stop);
-            Button quiet = FindViewById<Button>(Resource.Id.Quiet);
 
             start.Click += (sender, e) =>
             {
@@ -53,11 +52,6 @@ namespace TempCollector_APP
 
             };
 
-            quiet.Click += (sender, e) =>
-            {
-                com.Udp_Close();
-            };
-
             plotview.Model = CreatePlotModel();
 
             new Thread(new ThreadStart(() =>
@@ -65,21 +59,9 @@ namespace TempCollector_APP
                 string data = "";
                 bool run = true;
 
-                //var series1 = new LineSeries
-
-                //{
-
-                //    Title = "体温",
-
-                //    MarkerType = MarkerType.Circle,
-
-                //    MarkerSize = 2,
-
-                //    MarkerStroke = OxyColors.White
-
-                //};
-                //double x = 0;
-                //double y = 0;
+                var series = plotview.Model.Series[0] as LineSeries;
+                double x = 0;
+                double y = 0;
                 while (run)
                 {
                     try
@@ -93,36 +75,16 @@ namespace TempCollector_APP
                     }
                     if (data != "")
                     {
-                        view.Text = DateTime.Now.ToString("yyyy年MM月dd日 HH:mm:ss") + data ;//文本显示温度值
+                        view.Text = DateTime.Now.ToString("yyyy年MM月dd日 HH:mm:ss") +": "+ data ;//文本显示温度值
 
-                        //y = Convert.ToDouble(data);
-                        //series1.Points.Add(new DataPoint(x, y));
-                        //plotview.Model.Series.Add(series1);
-                        //x += 1;
+                        y = Convert.ToDouble(data);
+                        series.Points.Add(new DataPoint(x, y));
+                        plotview.Model.InvalidatePlot(true);
+                        x += 1;
                     }
                     Thread.Sleep(100);
                 }
             })).Start();
-
-            //------------------------------------------------------------------------------
-            //System.Timers.Timer timer = new System.Timers.Timer(100);
-            //timer.Elapsed += delegate
-            //{
-            //    string data = "";
-            //    string ip = "";
-            //    int port;
-            //    RunOnUiThread(() =>
-            //    {
-            //        com.UDP_Read(out data,out ip,out port);
-            //        if (data != "")
-            //        {
-            //            view.Text += DateTime.Now.ToString("yyyy年MM月dd日 HH:mm:ss") + data + "\n";
-
-            //        }
-            //    });
-            //};
-            //timer.Enabled = true;
-            //------------------------------------------------------------------------------
         }
         private PlotModel CreatePlotModel()
 
@@ -146,39 +108,20 @@ namespace TempCollector_APP
 
             ////创建数据列
 
-            //var series1 = new LineSeries
+            var serie = new LineSeries
 
-            //{
+            {
 
-            //    Title = "体温",
+                Title = "体温",
 
-            //    MarkerType = MarkerType.Circle,
+                MarkerType = MarkerType.Circle,
 
-            //    MarkerSize = 2,
+                MarkerSize = 2,
 
-            //    MarkerStroke = OxyColors.White
+                MarkerStroke = OxyColors.White
 
-            //};
-
-            ////添加数据点
-
-            //series1.Points.Add(new DataPoint(0, 36.5));
-
-            //series1.Points.Add(new DataPoint(1, 37.5));
-
-            //series1.Points.Add(new DataPoint(2, 38.5));
-
-            //series1.Points.Add(new DataPoint(3, 39.5));
-
-            //series1.Points.Add(new DataPoint(4, 39.8));
-
-            //series1.Points.Add(new DataPoint(5, 38.5));
-
-            //series1.Points.Add(new DataPoint(6, 37.5));
-
-            ////添加数据列
-
-            //plotModel.Series.Add(series1);
+            };
+            plotModel.Series.Add(serie);
 
             return plotModel;
 
