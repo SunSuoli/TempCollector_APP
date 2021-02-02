@@ -120,6 +120,8 @@ namespace Custom_Communiations
     {
         private static UdpClient UDPHandle = new UdpClient();
 
+        private static IPEndPoint UDPRemote_Read = new IPEndPoint(IPAddress.Any, 0);//要监听的远程目标，这种写法表示监听任意目标
+        private static IPEndPoint UDPRemote_Write;//要发送的远程目标，这种写法表示监听任意目标
         public void UDP_Open(string ip, int port)
         {
             IPEndPoint UDPLocal = new IPEndPoint(IPAddress.Parse(ip), port);//绑定本地的IP（多个网卡中的某一个）和设置本地端口号
@@ -129,10 +131,10 @@ namespace Custom_Communiations
         public string UDP_Read()//从任意远程目标监听数据
         {
             string data = "";
-            IPEndPoint UDPRemote = new IPEndPoint(IPAddress.Any, 0);//要监听的远程目标，这种写法表示监听任意目标
+            
             if (UDPHandle.Available > 0)//利用Available属性可以使阻塞式IO当做不阻塞使用
             {
-                data = Encoding.Default.GetString(UDPHandle.Receive(ref UDPRemote));//将字节数组转化成字符串
+                data = Encoding.Default.GetString(UDPHandle.Receive(ref UDPRemote_Read));//将字节数组转化成字符串
             }
             else
             {
@@ -142,10 +144,10 @@ namespace Custom_Communiations
         }
         public void UDP_Write(string data, string ip, int port)//发送数据到指定远程目标
         {
-            UDPHandle.Connect(IPAddress.Parse(ip), port);//连接远程目标,ip为255.255.255.255时，数据进行广播。
+            UDPRemote_Write = new IPEndPoint(IPAddress.Parse(ip), port);//连接远程目标,ip为255.255.255.255时，数据进行广播。
             Byte[] data_Send = Encoding.Default.GetBytes(data);
             int data_length = data_Send.Length;
-            UDPHandle.Send(data_Send, data_length);
+            UDPHandle.Send(data_Send, data_length, UDPRemote_Write);
         }
         public void Udp_Close()
         {

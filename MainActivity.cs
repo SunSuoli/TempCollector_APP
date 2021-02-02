@@ -40,17 +40,17 @@ namespace TempCollector_APP
             start.Click += (sender, e) =>
             {
                 //发送以后就无法接收到数据，UDP发送有BUG
-                //if (Is_collectining)
-                //{
-                //    com.UDP_Write("stop", "255.255.255.255", 11067);//向端口号11067广播数据
-                //    Is_collectining = false;
-                //}
-                //else
-                //{
-                //    com.UDP_Write("start", "255.255.255.255", 11067);//向端口号11067广播数据
-                //    Is_collectining = true;
-                //}
-                
+                if (Is_collectining)
+                {
+                    com.UDP_Write("stop", "255.255.255.255", 11067);//向端口号11067广播数据
+                    Is_collectining = false;
+                }
+                else
+                {
+                    com.UDP_Write("start", "255.255.255.255", 11067);//向端口号11067广播数据
+                    Is_collectining = true;
+                }
+
             };
 
             quiet.Click += (sender, e) =>
@@ -65,21 +65,21 @@ namespace TempCollector_APP
                 string data = "";
                 bool run = true;
 
-                var series1 = new LineSeries
+                //var series1 = new LineSeries
 
-                {
+                //{
 
-                    Title = "体温",
+                //    Title = "体温",
 
-                    MarkerType = MarkerType.Circle,
+                //    MarkerType = MarkerType.Circle,
 
-                    MarkerSize = 2,
+                //    MarkerSize = 2,
 
-                    MarkerStroke = OxyColors.White
+                //    MarkerStroke = OxyColors.White
 
-                };
-                double x = 0;
-                double y = 0;
+                //};
+                //double x = 0;
+                //double y = 0;
                 while (run)
                 {
                     try
@@ -95,9 +95,10 @@ namespace TempCollector_APP
                     {
                         view.Text = DateTime.Now.ToString("yyyy年MM月dd日 HH:mm:ss") + data ;//文本显示温度值
 
-                        y = Convert.ToDouble(data);
-                        series1.Points.Add(new DataPoint(x, y));
-                        plotview.Model.Series.Add(series1);
+                        //y = Convert.ToDouble(data);
+                        //series1.Points.Add(new DataPoint(x, y));
+                        //plotview.Model.Series.Add(series1);
+                        //x += 1;
                     }
                     Thread.Sleep(100);
                 }
