@@ -8,20 +8,31 @@
     <TextView
         android:text="Temp"
         android:layout_width="match_parent"
-        android:layout_height="380.0dp"
-        android:minWidth="25px"
-        android:minHeight="25px"
+        android:layout_height="26.0dp"
         android:id="@+id/Receive"
         android:textColor="#ffef6c00"
-        android:isScrollContainer="true" 
+        android:background="#ff000000"
         />
+    <OxyPlot.Xamarin.Android.PlotView
+        android:layout_marginTop="26dp"
+        android:layout_width="match_parent"
+        android:layout_height="400.0dp"
+        android:id="@+id/Chart_View"
+        android:background="#ff33691e" />
     <Button
         android:text="Button"
+        android:layout_marginTop="426dp"
+        android:layout_marginLeft="125dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/Start_Stop"
-        android:layout_marginTop="380dp"
-        android:layout_marginLeft="125.0dp"
     />
-
+    <Button
+        android:text="out"
+        android:layout_marginTop="426dp"
+        android:layout_marginLeft="300dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/Quiet" 
+        />
 </RelativeLayout>

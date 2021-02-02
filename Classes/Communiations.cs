@@ -126,8 +126,9 @@ namespace Custom_Communiations
             UDPHandle = new UdpClient(UDPLocal);
 
         }
-        public void UDP_Read(out string data, out string ip, out int port)//从任意远程目标监听数据
+        public string UDP_Read()//从任意远程目标监听数据
         {
+            string data = "";
             IPEndPoint UDPRemote = new IPEndPoint(IPAddress.Any, 0);//要监听的远程目标，这种写法表示监听任意目标
             if (UDPHandle.Available > 0)//利用Available属性可以使阻塞式IO当做不阻塞使用
             {
@@ -137,8 +138,7 @@ namespace Custom_Communiations
             {
                 data = "";
             }
-            ip = UDPRemote.Address.ToString();
-            port = UDPRemote.Port;
+            return data;
         }
         public void UDP_Write(string data, string ip, int port)//发送数据到指定远程目标
         {
