@@ -64,18 +64,10 @@ namespace TempCollector_APP
                 double y = 0;
                 while (run)
                 {
-                    try
-                    {
-                        data = com.UDP_Read();
-                    }
-                    catch(Exception e)
-                    {
-                        view.Text = e.Message;
-                        run = false;
-                    }
+                    data = com.UDP_Read();
                     if (data != "")
                     {
-                        view.Text = DateTime.Now.ToString("yyyy年MM月dd日 HH:mm:ss") +": "+ data ;//文本显示温度值
+                        view.Text =data ;//文本显示温度值
 
                         y = Convert.ToDouble(data);
                         series.Points.Add(new DataPoint(x, y));

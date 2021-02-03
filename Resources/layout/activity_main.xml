@@ -4,29 +4,53 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <TextView
-        android:text="Temp"
+    android:layout_height="match_parent"
+    >
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="26.0dp"
-        android:id="@+id/Receive"
-        android:textColor="#ffef6c00"
-        android:background="#ff000000"
-        />
+        android:layout_height="60dp"
+        android:id="@+id/relativeLayout1">
+        <TextView
+            android:text="36.5"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:id="@+id/Receive"
+            android:textSize="50dp" />
+        <TextView
+            android:text="o"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/Receive"
+            android:layout_marginLeft="10dp"
+            android:layout_alignBottom="@+id/Receive"
+            android:layout_marginBottom="20dp"
+            android:id="@+id/label"
+            android:textSize="20dp" />
+        <TextView
+            android:text="C"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/label"
+            android:layout_alignBottom="@+id/Receive"
+            android:layout_marginBottom="5dp"
+            android:id="@+id/labe2"
+            android:textSize="30dp" />
+    </RelativeLayout >
     <OxyPlot.Xamarin.Android.PlotView
-        android:layout_marginTop="26dp"
         android:layout_width="match_parent"
-        android:layout_height="518.9dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/relativeLayout1"
+        android:layout_above="@+id/Start_Stop"
         android:id="@+id/Chart_View"
-        android:background="#ff33691e"
      />
     <Button
         android:text="Start"
-        android:layout_marginTop="57.5dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="100dp"
+        android:layout_alignParentBottom="true"
         android:id="@+id/Start_Stop"
-        android:height="100dp"
-        android:layout_alignParentBottom="true" 
+         
     />
+
 </RelativeLayout>
