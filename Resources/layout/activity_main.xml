@@ -50,7 +50,6 @@
         android:layout_height="100dp"
         android:layout_alignParentBottom="true"
         android:id="@+id/Start_Stop"
-         
     />
 
 </RelativeLayout>

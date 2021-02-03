@@ -74,7 +74,7 @@ namespace TempCollector_APP
                         plotview.Model.InvalidatePlot(true);
                         x += 1;
                     }
-                    Thread.Sleep(100);
+                    Thread.Sleep(10);
                 }
             })).Start();
         }
