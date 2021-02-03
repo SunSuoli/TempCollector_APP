@@ -24,7 +24,7 @@
             android:layout_toRightOf="@+id/Receive"
             android:layout_marginLeft="10dp"
             android:layout_alignBottom="@+id/Receive"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="15dp"
             android:id="@+id/label"
             android:textSize="20dp" />
         <TextView
@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/label"
             android:layout_alignBottom="@+id/Receive"
-            android:layout_marginBottom="5dp"
+            android:layout_marginBottom="-2dp"
             android:id="@+id/labe2"
             android:textSize="30dp" />
     </RelativeLayout >
@@ -44,12 +44,19 @@
         android:layout_above="@+id/Start_Stop"
         android:id="@+id/Chart_View"
      />
-    <Button
-        android:text="Start"
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
+
+    <ToggleButton
+        android:layout_width="64dp"
+        android:layout_height="64dp"
         android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="10dp"
+        android:button="@drawable/Button_Round"
+        android:text=""
+        android:textOff=""
+        android:textOn=""
         android:id="@+id/Start_Stop"
-    />
+        android:background="#00000000" 
+         />
 
 </RelativeLayout>
