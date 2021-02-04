@@ -8,15 +8,17 @@
     >
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:id="@+id/relativeLayout1">
+        android:layout_height="250dp"
+        android:id="@+id/relativeLayout1"
+        android:background="#ff589fa0">
         <TextView
             android:text="36.5"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:id="@+id/Receive"
-            android:textSize="50dp" />
+            android:textSize="50dp"
+            android:textColor="#ffffffff" />
         <TextView
             android:text="o"
             android:layout_width="wrap_content"
@@ -24,18 +26,20 @@
             android:layout_toRightOf="@+id/Receive"
             android:layout_marginLeft="10dp"
             android:layout_alignBottom="@+id/Receive"
-            android:layout_marginBottom="15dp"
+            android:layout_marginBottom="25dp"
             android:id="@+id/label"
-            android:textSize="20dp" />
+            android:textSize="20dp"
+            android:textColor="#ffffffff" />
         <TextView
             android:text="C"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/label"
             android:layout_alignBottom="@+id/Receive"
-            android:layout_marginBottom="-2dp"
+            android:layout_marginBottom="6dp"
             android:id="@+id/labe2"
-            android:textSize="30dp" />
+            android:textSize="30dp"
+            android:textColor="#ffffffff" />
     </RelativeLayout >
     <OxyPlot.Xamarin.Android.PlotView
         android:layout_width="match_parent"

@@ -1,6 +1,6 @@
-﻿using System;
-using System.Threading;
-using Android.App;
+﻿using Android.App;
+using Android.Content.Res;
+using Android.Media;
 using Android.OS;
 using Android.Runtime;
 using Android.Support.V7.App;
@@ -10,6 +10,8 @@ using OxyPlot;
 using OxyPlot.Axes;
 using OxyPlot.Series;
 using OxyPlot.Xamarin.Android;
+using System;
+using System.Threading;
 using TempCollector;
 namespace TempCollector_APP
 {
@@ -74,7 +76,7 @@ namespace TempCollector_APP
                         plotview.Model.InvalidatePlot(true);
                         x += 1;
                     }
-                    Thread.Sleep(20);
+                    Thread.Sleep(10);
                 }
             })).Start();
         }
@@ -118,7 +120,8 @@ namespace TempCollector_APP
             return plotModel;
 
         }
-        public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
+
+    public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
         {
             Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
 
