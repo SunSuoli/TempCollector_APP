@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="250dp"
         android:id="@+id/relativeLayout1"
-        android:background="#ff589fa0">
+        android:background="#ff58c0c1">
         <TextView
             android:text="36.5"
             android:layout_width="100dp"
@@ -40,6 +40,13 @@
             android:id="@+id/labe2"
             android:textSize="30dp"
             android:textColor="#ffffffff" />
+        <TextView
+            android:text="Text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:id="@id/message"
+            android:textSize="20dp" />
     </RelativeLayout >
     <OxyPlot.Xamarin.Android.PlotView
         android:layout_width="match_parent"

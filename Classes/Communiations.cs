@@ -10,14 +10,14 @@ namespace Custom_Communiations
     {
         private TcpListener Listener_Handle=null;//实例化一个侦听器
         private TcpClient Client_handle = null;//实例化一个公共的TCP句柄
-        private NetworkStream stream=null;//实例化一个数据流类
+        private NetworkStream Stream=null;//实例化一个数据流类
         public void TCP_Write(string message)//发送数据
         {
-            if (stream != null)
+            if (Stream != null)
             {
                 Byte[] data_Send = Encoding.Default.GetBytes(message);
                 int data_length = data_Send.Length;
-                stream.Write(data_Send, 0, data_length);
+                Stream.Write(data_Send, 0, data_length);
             }
         }
         public string TCP_Read(int lenght, int time_out)//接收数据
@@ -30,34 +30,20 @@ namespace Custom_Communiations
                 if (Client_handle != null)
                 {
                     //利用Available属性可以使阻塞式IO当做不阻塞使用
-                    if (Client_handle.Available >= lenght)//如果数据长度满足则停止读取
+                    if (Client_handle.Available >= lenght|| i >= time_out)//如果数据长度满足则停止读取
                     {
                         Byte[] data = new Byte[lenght];
-                        Int32 bytes = stream.Read(data, 0, data.Length);
+                        Int32 bytes = Stream.Read(data, 0, data.Length);
                         message = Encoding.Default.GetString(data, 0, bytes);
                         read = false;
                     }
-                    else if (i >= time_out)//如果超时，则将现有的数据读出，停止读取
-                    {
-                        if (Client_handle.Available > 0)
-                        {
-                            Byte[] data = new Byte[lenght];
-                            Int32 bytes = stream.Read(data, 0, data.Length);
-                            message = Encoding.Default.GetString(data, 0, bytes);
-                        }
-                        read = false;
-                    }
-                    else
-                    {
-                        message = "";
-                    }
+                    i++;
                 }
                 else
                 {
                     message = "";
                     read = false;
                 }
-                i++;
                 Thread.Sleep(1);//延时1毫秒
             }
             return message;
@@ -72,29 +58,28 @@ namespace Custom_Communiations
             {
                 Client_handle.Close();
             }
-            if (Client_handle != null)
+            if (Stream != null)
             {
-               stream.Close();
+               Stream.Close();
             }
         }
         public void TCP_Connect(string ip_remote, int port_remote, int port_local)//创建客户端连接
         {
             IPEndPoint Clinet_EndPoint = new IPEndPoint(IPAddress.Any, port_local);//指定本地端口号
-            TcpClient Connect_Handle = new TcpClient(Clinet_EndPoint);//重新实例化客户端
-            Connect_Handle.Connect(ip_remote, port_remote);//绑定远程端口
-            Client_handle = Connect_Handle;
-            stream = Connect_Handle.GetStream();
+            Client_handle = new TcpClient(Clinet_EndPoint);//重新实例化客户端
+            //Client_handle.Connect(ip_remote, port_remote);//绑定远程端口
+            Stream = Client_handle.GetStream();
         }
 
         public void TCP_Listener_Create(string ip, int port)//创建TCP侦听器
         {
-            TcpListener Listener_Handle = new TcpListener(IPAddress.Parse(ip), port);//绑定本地的IP（多个网卡中的某一个）和尝试连接的远程端口号
+            Listener_Handle = new TcpListener(IPAddress.Parse(ip), port);//绑定本地的IP（多个网卡中的某一个）和尝试连接的远程端口号
             Listener_Handle.Start();
         }
-        public TcpClient TCP_Listener_Wait(TcpListener Listener_Handle, int time_out)
+        public int TCP_Listener_Wait(int time_out)
         {
-            TcpClient client = null;
             int i = 0;
+            int result = 0;
             bool wait = true;
             while (wait)
             {
@@ -103,17 +88,20 @@ namespace Custom_Communiations
                     if (i >= time_out)//等待已超时
                     {
                         wait = false;
+                        result = 0;
                     }
                 }
                 else//有客户端接入
                 {
-                    client = Listener_Handle.AcceptTcpClient();
+                    Client_handle = Listener_Handle.AcceptTcpClient();
+                    Stream = Client_handle.GetStream();
                     wait = false;
+                    result = 1;
                 }
                 i++;
                 Thread.Sleep(1);
             }
-            return client;
+            return result;
         }//等待客户端接入
     }
     public class UDP

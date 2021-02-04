@@ -1,6 +1,4 @@
 ﻿using Android.App;
-using Android.Content.Res;
-using Android.Media;
 using Android.OS;
 using Android.Runtime;
 using Android.Support.V7.App;
@@ -18,7 +16,7 @@ namespace TempCollector_APP
     [Activity(Label = "@string/app_name", Theme = "@style/AppTheme", MainLauncher = true)]
     public class MainActivity : AppCompatActivity
     {
-        UDP com = new UDP();
+        TCP server = new TCP();
         Enthernet et = new Enthernet();
 
         bool Is_collectining = false;
@@ -31,24 +29,24 @@ namespace TempCollector_APP
             // Set our view from the "main" layout resource//设置界面来源
             SetContentView(Resource.Layout.activity_main);
 
-           
-            com.UDP_Open(et.GetLocalIp(), 11066);//打开UDP连接
+
+            server.TCP_Listener_Create(et.GetLocalIp(), 11066);//创建TCP侦听器
 
             TextView view = FindViewById<TextView>(Resource.Id.Receive);
             PlotView plotview = FindViewById<PlotView>(Resource.Id.Chart_View);
             Button start= FindViewById<Button>(Resource.Id.Start_Stop);
+            TextView msg = FindViewById<TextView>(Resource.Id.message);
 
             start.Click += (sender, e) =>
             {
-                //发送以后就无法接收到数据，UDP发送有BUG
                 if (Is_collectining)
                 {
-                    com.UDP_Write("stop", "255.255.255.255", 11067);//向端口号11067广播数据
+                    server.TCP_Write("stop");
                     Is_collectining = false;
                 }
                 else
                 {
-                    com.UDP_Write("start", "255.255.255.255", 11067);//向端口号11067广播数据
+                    server.TCP_Write("start");
                     Is_collectining = true;
                 }
 
@@ -60,21 +58,47 @@ namespace TempCollector_APP
             {
                 string data = "";
                 bool run = true;
+                int state = 0;
+                int client_number = 0;
 
                 var series = plotview.Model.Series[0] as LineSeries;
                 double x = 0;
                 double y = 0;
                 while (run)
                 {
-                    data = com.UDP_Read();
-                    if (data != "")
+                    switch (state)
                     {
-                        view.Text =data ;//文本显示温度值
+                        case 0://等待客户端接入
+                            msg.Text = "等待客户端接入";
+                            client_number = server.TCP_Listener_Wait(50);
+                            if (client_number >0)
+                            {
+                                state = 1;
+                                msg.Text = "有客户端接入";
+                            }
+                            break;
+                        case 1://读取数据
+                            try
+                            {
+                                server.TCP_Write(".");//发送数据验证客户端是否在线
+                                data = server.TCP_Read(2048, 10);
+                                if (data != "")
+                                {
+                                    view.Text = data;//文本显示温度值
 
-                        y = Convert.ToDouble(data);
-                        series.Points.Add(new DataPoint(x, y));
-                        plotview.Model.InvalidatePlot(true);
-                        x += 1;
+                                    y = Convert.ToDouble(data);
+                                    series.Points.Add(new DataPoint(x, y));
+                                    plotview.Model.InvalidatePlot(true);
+                                    x += 1;
+                                }
+                            }
+                            catch
+                            {
+                                state = 0;//有错误重新侦听客户端
+                            }
+                            break;
+                        default:
+                            break;
                     }
                     Thread.Sleep(10);
                 }
@@ -90,7 +114,7 @@ namespace TempCollector_APP
 
             {
 
-                Title = "体温监测"
+                //Title = "体温监测"
 
             };
 
