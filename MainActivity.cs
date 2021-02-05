@@ -1,6 +1,7 @@
 ﻿using Android.App;
 using Android.OS;
 using Android.Runtime;
+using Android.Support.Design.Widget;
 using Android.Support.V7.App;
 using Android.Widget;
 using Custom_Communiations;
@@ -17,7 +18,7 @@ namespace TempCollector_APP
     public class MainActivity : AppCompatActivity
     {
         TCP server = new TCP();
-        Enthernet et = new Enthernet();
+        //Enthernet et = new Enthernet();
 
         bool Is_collectining = false;
         
@@ -30,27 +31,26 @@ namespace TempCollector_APP
             SetContentView(Resource.Layout.activity_main);
 
 
-            server.TCP_Listener_Create(et.GetLocalIp(), 11066);//创建TCP侦听器
 
             TextView view = FindViewById<TextView>(Resource.Id.Receive);
             PlotView plotview = FindViewById<PlotView>(Resource.Id.Chart_View);
-            Button start= FindViewById<Button>(Resource.Id.Start_Stop);
+            ToggleButton start = FindViewById<ToggleButton>(Resource.Id.Start_Stop);
             TextView msg = FindViewById<TextView>(Resource.Id.message);
 
-            start.Click += (sender, e) =>
-            {
-                if (Is_collectining)
-                {
-                    server.TCP_Write("stop");
-                    Is_collectining = false;
-                }
-                else
-                {
-                    server.TCP_Write("start");
-                    Is_collectining = true;
-                }
+            //start.Click += (sender, e) =>
+            //{
+            //    if (Is_collectining)
+            //    {
+            //        server.TCP_Write("stop");
+            //        Is_collectining = false;
+            //    }
+            //    else
+            //    {
+            //        server.TCP_Write("start");
+            //        Is_collectining = true;
+            //    }
 
-            };
+            //};
 
             plotview.Model = CreatePlotModel();
 
@@ -59,48 +59,66 @@ namespace TempCollector_APP
                 string data = "";
                 bool run = true;
                 int state = 0;
-                int client_number = 0;
 
                 var series = plotview.Model.Series[0] as LineSeries;
                 double x = 0;
-                double y = 0;
+                double y = 0.0;
                 while (run)
                 {
                     switch (state)
                     {
-                        case 0://等待客户端接入
-                            msg.Text = "等待客户端接入";
-                            client_number = server.TCP_Listener_Wait(50);
-                            if (client_number >0)
+                        case 0://尝试连接服务器
+                            try
                             {
+                                RunOnUiThread(() => { start.Checked=false; });
+
+                                server.TCP_Close_Listener();
+                                server.TCP_Close_Client();
+                                server.TCP_Close_Stream();
+
+                                RunOnUiThread(() => { msg.Text = "搜索设备…"; });
+                                server.TCP_Connect("192.168.0.124", 11066, 11067);
+
+                                RunOnUiThread(() => { msg.Text = "连接成功"; });
                                 state = 1;
-                                msg.Text = "有客户端接入";
+                            }
+                            catch
+                            {
+                                RunOnUiThread(() => { msg.Text = "连接失败"; });
+                                Thread.Sleep(500);
                             }
                             break;
                         case 1://读取数据
                             try
                             {
-                                server.TCP_Write(".");//发送数据验证客户端是否在线
-                                data = server.TCP_Read(2048, 10);
-                                if (data != "")
-                                {
-                                    view.Text = data;//文本显示温度值
-
-                                    y = Convert.ToDouble(data);
-                                    series.Points.Add(new DataPoint(x, y));
-                                    plotview.Model.InvalidatePlot(true);
-                                    x += 1;
-                                }
+                                server.TCP_Write(" ");//发送数据验证客户端是否在线
+                                data = server.TCP_Read(4, 10);
                             }
                             catch
                             {
-                                state = 0;//有错误重新侦听客户端
+                                state = 0;//通讯有错误重新侦听客户端
+                                RunOnUiThread(() => { msg.Text = "连接断开"; });
+                            }
+                            if (data != ""&& start.Checked)
+                            {
+                                RunOnUiThread(() => { view.Text = data; });//文本显示温度值
+                                y = Convert.ToDouble(data);
+                                try
+                                {
+                                    series.Points.Add(new DataPoint(x, y));
+                                    plotview.Model.InvalidatePlot(true);
+                                    x += 1;//绘制成功后横轴加1
+                                }
+                                catch (Exception e)
+                                {
+                                    RunOnUiThread(() => { msg.Text = "绘制错误"; });
+                                }
                             }
                             break;
                         default:
                             break;
                     }
-                    Thread.Sleep(10);
+                    Thread.Sleep(20);
                 }
             })).Start();
         }
@@ -145,7 +163,7 @@ namespace TempCollector_APP
 
         }
 
-    public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
+        public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
         {
             Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
 

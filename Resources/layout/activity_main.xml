@@ -40,13 +40,6 @@
             android:id="@+id/labe2"
             android:textSize="30dp"
             android:textColor="#ffffffff" />
-        <TextView
-            android:text="Text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:id="@id/message"
-            android:textSize="20dp" />
     </RelativeLayout >
     <OxyPlot.Xamarin.Android.PlotView
         android:layout_width="match_parent"
@@ -54,6 +47,7 @@
         android:layout_below="@+id/relativeLayout1"
         android:layout_above="@+id/Start_Stop"
         android:id="@+id/Chart_View"
+        android:background="#ff58c0c1"
      />
 
     <ToggleButton
@@ -69,5 +63,14 @@
         android:id="@+id/Start_Stop"
         android:background="#00000000" 
          />
+    <TextView
+        android:text="Text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="30dp"
+        android:layout_marginLeft="10dp"
+        android:id="@id/message"
+        android:textSize="15dp" />
 
 </RelativeLayout>
