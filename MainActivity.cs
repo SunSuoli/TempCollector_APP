@@ -20,7 +20,6 @@ namespace TempCollector_APP
         TCP server = new TCP();
         //Enthernet et = new Enthernet();
 
-        bool Is_collectining = false;
         
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -35,22 +34,8 @@ namespace TempCollector_APP
             TextView view = FindViewById<TextView>(Resource.Id.Receive);
             PlotView plotview = FindViewById<PlotView>(Resource.Id.Chart_View);
             ToggleButton start = FindViewById<ToggleButton>(Resource.Id.Start_Stop);
-            TextView msg = FindViewById<TextView>(Resource.Id.message);
+            ToggleButton connect = FindViewById<ToggleButton>(Resource.Id.connect);
 
-            //start.Click += (sender, e) =>
-            //{
-            //    if (Is_collectining)
-            //    {
-            //        server.TCP_Write("stop");
-            //        Is_collectining = false;
-            //    }
-            //    else
-            //    {
-            //        server.TCP_Write("start");
-            //        Is_collectining = true;
-            //    }
-
-            //};
 
             plotview.Model = CreatePlotModel();
 
@@ -71,20 +56,20 @@ namespace TempCollector_APP
                             try
                             {
                                 RunOnUiThread(() => { start.Checked=false; });
+                                RunOnUiThread(() => { connect.Checked = false; });
 
                                 server.TCP_Close_Listener();
                                 server.TCP_Close_Client();
                                 server.TCP_Close_Stream();
 
-                                RunOnUiThread(() => { msg.Text = "搜索设备…"; });
+                                
                                 server.TCP_Connect("192.168.0.124", 11066, 11067);
 
-                                RunOnUiThread(() => { msg.Text = "连接成功"; });
+                                RunOnUiThread(() => { connect.Checked = true; });
                                 state = 1;
                             }
                             catch
                             {
-                                RunOnUiThread(() => { msg.Text = "连接失败"; });
                                 Thread.Sleep(500);
                             }
                             break;
@@ -92,12 +77,11 @@ namespace TempCollector_APP
                             try
                             {
                                 server.TCP_Write(" ");//发送数据验证客户端是否在线
-                                data = server.TCP_Read(4, 10);
+                                data = server.TCP_Read(1024, 3);
                             }
                             catch
                             {
                                 state = 0;//通讯有错误重新侦听客户端
-                                RunOnUiThread(() => { msg.Text = "连接断开"; });
                             }
                             if (data != ""&& start.Checked)
                             {
@@ -111,7 +95,6 @@ namespace TempCollector_APP
                                 }
                                 catch (Exception e)
                                 {
-                                    RunOnUiThread(() => { msg.Text = "绘制错误"; });
                                 }
                             }
                             break;
@@ -125,28 +108,43 @@ namespace TempCollector_APP
         private PlotModel CreatePlotModel()
 
         {
-
+            
             //创建图表模式
 
             var plotModel = new PlotModel
 
             {
-
                 //Title = "体温监测"
-
+                PlotAreaBorderColor= OxyColors.White,
             };
 
             //添加坐标轴
 
-            plotModel.Axes.Add(new LinearAxis { Position = AxisPosition.Bottom });
+            plotModel.Axes.Add(new LinearAxis { 
+                Position = AxisPosition.Bottom , 
+                Minimum = 0,
+                TextColor= OxyColors.White,
+                AxislineColor= OxyColors.White,
+                TitleColor = OxyColors.White,
+                TicklineColor= OxyColors.White,//刻度线
+            });
 
-            plotModel.Axes.Add(new LinearAxis { Position = AxisPosition.Left, Maximum = 42, Minimum = 32 });
+            plotModel.Axes.Add(new LinearAxis { 
+                Position = AxisPosition.Left, 
+                Maximum = 42, 
+                Minimum = 0,
+                TextColor = OxyColors.White,
+                AxislineColor = OxyColors.White,
+                TitleColor = OxyColors.White,
+                TicklineColor = OxyColors.White,
+            });
 
             ////创建数据列
 
             var serie = new LineSeries
 
             {
+                Color = OxyColors.White,
 
                 Title = "体温",
 
