@@ -38,6 +38,7 @@ namespace TempCollector_APP
 
 
             plotview.Model = CreatePlotModel();
+            plotview.SetCursorType(CursorType.ZoomRectangle);
 
             new Thread(new ThreadStart(() =>
             {
@@ -46,7 +47,6 @@ namespace TempCollector_APP
                 int state = 0;
 
                 var series = plotview.Model.Series[0] as LineSeries;
-                double x = 0;
                 double y = 0.0;
                 while (run)
                 {
@@ -89,9 +89,8 @@ namespace TempCollector_APP
                                 y = Convert.ToDouble(data);
                                 try
                                 {
-                                    series.Points.Add(new DataPoint(x, y));
+                                    series.Points.Add(new DataPoint(DateTimeAxis.ToDouble(DateTime.Now), y));
                                     plotview.Model.InvalidatePlot(true);
-                                    x += 1;//绘制成功后横轴加1
                                 }
                                 catch (Exception e)
                                 {
@@ -119,44 +118,56 @@ namespace TempCollector_APP
             };
 
             //添加坐标轴
+            plotModel.Axes.Add(new DateTimeAxis { 
+                Position = AxisPosition.Bottom ,
+                StringFormat = "dd-hh:mm:ss",
+                Minimum = DateTimeAxis.ToDouble(DateTime.Now),
+                Maximum= DateTimeAxis.ToDouble(DateTime.Now.AddMinutes(1)),
 
-            plotModel.Axes.Add(new LinearAxis { 
-                Position = AxisPosition.Bottom , 
-                Minimum = 0,
-                TextColor= OxyColors.White,
-                AxislineColor= OxyColors.White,
+                Title = "时间",
+                TitlePosition = 0.5,//整个坐标轴为0-1，0.5为中间
                 TitleColor = OxyColors.White,
-                TicklineColor= OxyColors.White,//刻度线
-            });
 
+                TextColor = OxyColors.White,//刻度文本
+                AxislineColor= OxyColors.White,//坐标轴线
+                TicklineColor= OxyColors.White,//刻度线
+
+                MinorIntervalType = DateTimeIntervalType.Seconds,
+                IntervalType = DateTimeIntervalType.Seconds,
+                //MajorGridlineStyle = LineStyle.Solid,//主网格
+                //MinorGridlineStyle = LineStyle.None,//次网格
+            });
             plotModel.Axes.Add(new LinearAxis { 
                 Position = AxisPosition.Left, 
                 Maximum = 42, 
                 Minimum = 0,
+
+                Title = "体温",
+                TitlePosition = 0.5,//整个坐标轴为0-1，0.5为中间
+                TitleColor = OxyColors.White,
+
                 TextColor = OxyColors.White,
                 AxislineColor = OxyColors.White,
-                TitleColor = OxyColors.White,
                 TicklineColor = OxyColors.White,
-            });
 
+                MajorGridlineStyle = LineStyle.Solid,//主网格样式
+                MajorGridlineColor = OxyColors.SlateGray,//主网格颜色
+            });;;
             ////创建数据列
-
             var serie = new LineSeries
-
             {
                 Color = OxyColors.White,
 
                 Title = "体温",
-
+                
                 MarkerType = MarkerType.Circle,
 
-                MarkerSize = 2,
+                MarkerSize = 1,
 
                 MarkerStroke = OxyColors.White
 
             };
             plotModel.Series.Add(serie);
-
             return plotModel;
 
         }
