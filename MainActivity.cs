@@ -1,10 +1,10 @@
 ﻿using Android.App;
 using Android.OS;
 using Android.Runtime;
-using Android.Support.Design.Widget;
 using Android.Support.V7.App;
 using Android.Widget;
 using Custom_Communiations;
+using Custom_Files;
 using OxyPlot;
 using OxyPlot.Axes;
 using OxyPlot.Series;
@@ -12,6 +12,7 @@ using OxyPlot.Xamarin.Android;
 using System;
 using System.Threading;
 using TempCollector;
+
 namespace TempCollector_APP
 {
     [Activity(Label = "@string/app_name", Theme = "@style/AppTheme", MainLauncher = true)]
@@ -19,7 +20,7 @@ namespace TempCollector_APP
     {
         TCP server = new TCP();
         //Enthernet et = new Enthernet();
-
+        XML config = new XML(); 
         
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -35,7 +36,11 @@ namespace TempCollector_APP
             PlotView plotview = FindViewById<PlotView>(Resource.Id.Chart_View);
             ToggleButton start = FindViewById<ToggleButton>(Resource.Id.Start_Stop);
             ToggleButton connect = FindViewById<ToggleButton>(Resource.Id.connect);
+            TextView msg = FindViewById<TextView>(Resource.Id.msg);
 
+
+            msg.Text = config.Open();
+            msg.Text = config.Read("Parameters/Calibration/V_max");
 
             plotview.Model = CreatePlotModel();
             plotview.SetCursorType(CursorType.ZoomRectangle);
@@ -92,8 +97,9 @@ namespace TempCollector_APP
                                     series.Points.Add(new DataPoint(DateTimeAxis.ToDouble(DateTime.Now), y));
                                     plotview.Model.InvalidatePlot(true);
                                 }
-                                catch (Exception e)
+                                catch 
                                 {
+
                                 }
                             }
                             break;
@@ -171,7 +177,6 @@ namespace TempCollector_APP
             return plotModel;
 
         }
-
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
         {
             Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);

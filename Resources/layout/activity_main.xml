@@ -40,6 +40,13 @@
             android:id="@+id/labe2"
             android:textSize="30dp"
             android:textColor="#ffffffff" />
+        <TextView
+            android:text=""
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/Receive"
+            android:textColor="#ffffffff"
+            android:id="@+id/msg" />
     </RelativeLayout >
     <OxyPlot.Xamarin.Android.PlotView
         android:layout_width="match_parent"
