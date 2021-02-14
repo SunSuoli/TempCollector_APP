@@ -9,7 +9,7 @@ namespace Custom_Files
 
         XmlDocument document = new XmlDocument();
         
-        public string Open()
+        public void Open()
         {
             try
             {
@@ -49,7 +49,6 @@ namespace Custom_Files
                 //保存输出路径
                 document.Save(dbPath);
             }
-            return dbPath;
         }
         public string Read(string path)
         {
@@ -60,6 +59,7 @@ namespace Custom_Files
         {
             XmlNode element = document.SelectSingleNode(path);
             element.InnerText = value;
+            document.Save(dbPath);
         }
     }
 }

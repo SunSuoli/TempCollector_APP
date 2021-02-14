@@ -18,8 +18,10 @@ namespace TempCollector_APP
     [Activity(Label = "@string/app_name", Theme = "@style/AppTheme", MainLauncher = true)]
     public class MainActivity : AppCompatActivity
     {
-        TCP server = new TCP();
-        //Enthernet et = new Enthernet();
+        TCP client = new TCP();
+        UDP udp = new UDP();
+        Enthernet et = new Enthernet();
+
         XML config = new XML(); 
         
         protected override void OnCreate(Bundle savedInstanceState)
@@ -30,17 +32,24 @@ namespace TempCollector_APP
             // Set our view from the "main" layout resource//设置界面来源
             SetContentView(Resource.Layout.activity_main);
 
-
+            udp.UDP_Open(et.GetLocalIp(),11067);//打开UDP连接
 
             TextView view = FindViewById<TextView>(Resource.Id.Receive);
             PlotView plotview = FindViewById<PlotView>(Resource.Id.Chart_View);
             ToggleButton start = FindViewById<ToggleButton>(Resource.Id.Start_Stop);
             ToggleButton connect = FindViewById<ToggleButton>(Resource.Id.connect);
+            Button set= FindViewById<Button>(Resource.Id.set);
             TextView msg = FindViewById<TextView>(Resource.Id.msg);
 
 
-            msg.Text = config.Open();
+            set.Click += (e, t) =>
+             {
+
+                    };
+
+            config.Open();
             msg.Text = config.Read("Parameters/Calibration/V_max");
+            config.Update("Parameters/Calibration/V_max", "10086");
 
             plotview.Model = CreatePlotModel();
             plotview.SetCursorType(CursorType.ZoomRectangle);
@@ -53,54 +62,74 @@ namespace TempCollector_APP
 
                 var series = plotview.Model.Series[0] as LineSeries;
                 double y = 0.0;
+                string ESP_IP = "";//ESP-32的IP
                 while (run)
                 {
                     switch (state)
                     {
-                        case 0://尝试连接服务器
+                        case 0://获取服务器IP
+
+                            udp.UDP_Write("app","255.255.255.255", 11068);//向ESP广播数据
+                            udp.UDP_Read(out ESP_IP);
+                            if (ESP_IP != "")
+                            {
+                                RunOnUiThread(() => { msg.Text = "发现设备：" + ESP_IP; });
+                                state = 1;
+                            }
+                            break;
+                        case 1://尝试连接服务器
                             try
                             {
                                 RunOnUiThread(() => { start.Checked=false; });
                                 RunOnUiThread(() => { connect.Checked = false; });
 
-                                server.TCP_Close_Listener();
-                                server.TCP_Close_Client();
-                                server.TCP_Close_Stream();
+                                client.TCP_Close_Client();
+                                client.TCP_Close_Stream();
 
-                                
-                                server.TCP_Connect("192.168.0.124", 11066, 11067);
 
+                                client.TCP_Connect(ESP_IP, 11066, 11060);
+
+                                RunOnUiThread(() => { msg.Text = "连接设备：" + ESP_IP; });
                                 RunOnUiThread(() => { connect.Checked = true; });
-                                state = 1;
+                                state = 2;
                             }
                             catch
                             {
                                 Thread.Sleep(500);
                             }
                             break;
-                        case 1://读取数据
+                        case 2://读取数据
                             try
                             {
-                                server.TCP_Write(" ");//发送数据验证客户端是否在线
-                                data = server.TCP_Read(1024, 3);
+                                client.TCP_Write("app");//发送数据验证服务器是否在线
+                                
                             }
-                            catch
+                            catch(Exception e)
                             {
-                                state = 0;//通讯有错误重新侦听客户端
+                                RunOnUiThread(() => { msg.Text ="与服务器断开"; });
+                                state = 0;//通讯有错误重新连接服务器
                             }
-                            if (data != ""&& start.Checked)
+                            try
                             {
-                                RunOnUiThread(() => { view.Text = data; });//文本显示温度值
-                                y = Convert.ToDouble(data);
-                                try
+                                data = client.TCP_Read(4, 10);//10ms内接收4字节，字节内容为“XX.X”
+                                if (data != "" && start.Checked)
                                 {
-                                    series.Points.Add(new DataPoint(DateTimeAxis.ToDouble(DateTime.Now), y));
-                                    plotview.Model.InvalidatePlot(true);
-                                }
-                                catch 
-                                {
+                                    RunOnUiThread(() => { view.Text = data; });//文本显示温度值
+                                    y = Convert.ToDouble(data);
+                                    try
+                                    {
+                                        series.Points.Add(new DataPoint(DateTimeAxis.ToDouble(DateTime.Now), y));
+                                        plotview.Model.InvalidatePlot(true);
+                                    }
+                                    catch
+                                    {
 
+                                    }
                                 }
+                            }
+                            catch(Exception e)
+                            {
+                                //RunOnUiThread(() => { msg.Text = e.Message; });
                             }
                             break;
                         default:

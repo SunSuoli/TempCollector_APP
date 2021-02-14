@@ -137,17 +137,19 @@ namespace Custom_Communiations
             UDPHandle = new UdpClient(UDPLocal);
 
         }
-        public string UDP_Read()//从任意远程目标监听数据
+        public string UDP_Read(out string IP)//从任意远程目标监听数据
         {
             string data = "";
             
             if (UDPHandle.Available > 0)//利用Available属性可以使阻塞式IO当做不阻塞使用
             {
                 data = Encoding.Default.GetString(UDPHandle.Receive(ref UDPRemote_Read));//将字节数组转化成字符串
+                IP = UDPRemote_Read.Address.ToString();
             }
             else
             {
                 data = "";
+                IP = "";
             }
             return data;
         }
