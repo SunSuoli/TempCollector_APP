@@ -1,4 +1,5 @@
 ﻿using Android.App;
+using Android.Content;
 using Android.OS;
 using Android.Runtime;
 using Android.Support.V7.App;
@@ -45,11 +46,17 @@ namespace TempCollector_APP
             set.Click += (e, t) =>
              {
 
-                    };
+                 var intent = new Intent(this, typeof(SetActivity));
+                 //设置意图传递的参数
+                 //intent.PutStringArrayListExtra("phone_numbers", phoneNumbers);
+                 StartActivity(intent);
+             };
 
             config.Open();
-            msg.Text = config.Read("Parameters/Calibration/V_max");
-            config.Update("Parameters/Calibration/V_max", "10086");
+            double v_min = Convert.ToDouble(config.Read("Parameters/Calibration/V_min"));
+            double t_min = Convert.ToDouble(config.Read("Parameters/Calibration/T_min"));
+            double v_max = Convert.ToDouble(config.Read("Parameters/Calibration/V_max"));
+            double t_max = Convert.ToDouble(config.Read("Parameters/Calibration/T_max"));
 
             plotview.Model = CreatePlotModel();
             plotview.SetCursorType(CursorType.ZoomRectangle);
@@ -104,7 +111,7 @@ namespace TempCollector_APP
                                 client.TCP_Write("app");//发送数据验证服务器是否在线
                                 
                             }
-                            catch(Exception e)
+                            catch
                             {
                                 RunOnUiThread(() => { msg.Text ="与服务器断开"; });
                                 state = 0;//通讯有错误重新连接服务器
@@ -114,8 +121,8 @@ namespace TempCollector_APP
                                 data = client.TCP_Read(4, 10);//10ms内接收4字节，字节内容为“XX.X”
                                 if (data != "" && start.Checked)
                                 {
-                                    RunOnUiThread(() => { view.Text = data; });//文本显示温度值
-                                    y = Convert.ToDouble(data);
+                                    y = Calibration(Convert.ToDouble(data), v_min, t_min, v_max, t_max);
+                                    RunOnUiThread(() => { view.Text =y.ToString("f1") ; });//文本显示温度值
                                     try
                                     {
                                         series.Points.Add(new DataPoint(DateTimeAxis.ToDouble(DateTime.Now), y));
@@ -127,7 +134,7 @@ namespace TempCollector_APP
                                     }
                                 }
                             }
-                            catch(Exception e)
+                            catch
                             {
                                 //RunOnUiThread(() => { msg.Text = e.Message; });
                             }
@@ -205,6 +212,11 @@ namespace TempCollector_APP
             plotModel.Series.Add(serie);
             return plotModel;
 
+        }
+
+        public double Calibration(double X,double Xmin,double Ymin,double Xmax,double Ymax)
+        {
+            return (X - Xmin) * (Ymax - Ymin) / (Xmax - Xmin) + Ymin;
         }
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
         {

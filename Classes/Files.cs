@@ -31,13 +31,13 @@ namespace Custom_Files
                     Connection.AppendChild(Port);
                     XmlElement Calibration = document.CreateElement("Calibration"); //子节点—标定
                         XmlElement V_min = document.CreateElement("V_min");
-                        V_min.InnerText = "0";
-                        XmlElement Temp_min = document.CreateElement("Temp_min");
-                        Temp_min.InnerText = "35.0";
+                        V_min.InnerText = "1935";
+                        XmlElement Temp_min = document.CreateElement("T_min");
+                        Temp_min.InnerText = "23.4";
                         XmlElement V_max = document.CreateElement("V_max");
-                        V_max.InnerText = "4096";
-                        XmlElement Temp_max = document.CreateElement("Temp_max");
-                        Temp_max.InnerText = "42.0";
+                        V_max.InnerText = "1520";
+                        XmlElement Temp_max = document.CreateElement("T_max");
+                        Temp_max.InnerText = "34.2";
                     Calibration.AppendChild(V_min);
                     Calibration.AppendChild(Temp_min);
                     Calibration.AppendChild(V_max);

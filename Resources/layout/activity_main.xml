@@ -86,12 +86,13 @@
         android:enabled="false" 
          />
     <Button
-        android:text="set"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="10dp"
-        android:layout_below="@id/Chart_View"
-        android:id="@+id/set" />
+        android:layout_marginBottom="25dp"
+        android:layout_marginLeft="25dp"
+        android:id="@+id/set"
+        android:background="@drawable/Dataset"
+        />
 
 </RelativeLayout>
