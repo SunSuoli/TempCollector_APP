@@ -13,6 +13,8 @@ using OxyPlot.Xamarin.Android;
 using System;
 using System.Threading;
 using TempCollector;
+using Xamarin.Essentials;
+using Resource = TempCollector.Resource;
 
 namespace TempCollector_APP
 {
@@ -51,12 +53,12 @@ namespace TempCollector_APP
                  //intent.PutStringArrayListExtra("phone_numbers", phoneNumbers);
                  StartActivity(intent);
              };
-
             config.Open();
             double v_min = Convert.ToDouble(config.Read("Parameters/Calibration/V_min"));
             double t_min = Convert.ToDouble(config.Read("Parameters/Calibration/T_min"));
             double v_max = Convert.ToDouble(config.Read("Parameters/Calibration/V_max"));
             double t_max = Convert.ToDouble(config.Read("Parameters/Calibration/T_max"));
+            double warn_temp = Convert.ToDouble(config.Read("Parameters/Warn/Warn_Temp"));
 
             plotview.Model = CreatePlotModel();
             plotview.SetCursorType(CursorType.ZoomRectangle);
@@ -80,7 +82,7 @@ namespace TempCollector_APP
                             udp.UDP_Read(out ESP_IP);
                             if (ESP_IP != "")
                             {
-                                RunOnUiThread(() => { msg.Text = "发现设备：" + ESP_IP; });
+                                //RunOnUiThread(() => { msg.Text = "发现设备：" + ESP_IP; });
                                 state = 1;
                             }
                             break;
@@ -96,7 +98,7 @@ namespace TempCollector_APP
 
                                 client.TCP_Connect(ESP_IP, 11066, 11060);
 
-                                RunOnUiThread(() => { msg.Text = "连接设备：" + ESP_IP; });
+                                //RunOnUiThread(() => { msg.Text = "连接设备：" + ESP_IP; });
                                 RunOnUiThread(() => { connect.Checked = true; });
                                 state = 2;
                             }
@@ -131,6 +133,33 @@ namespace TempCollector_APP
                                     catch
                                     {
 
+                                    }
+                                    if (y >= warn_temp)//打开震动
+                                    {
+                                        try
+                                        {
+                                            // Use default vibration length
+                                            Vibration.Vibrate();
+
+                                            // Or use specified time
+                                            var duration = TimeSpan.FromSeconds(2);
+                                            Vibration.Vibrate(duration);
+                                        }
+                                        catch
+                                        {
+                                            // Feature not supported on device
+                                        }
+                                    }
+                                    else//关闭震动
+                                    {
+                                        try
+                                        {
+                                            Vibration.Cancel();
+                                        }
+                                        catch
+                                        {
+                                            // Feature not supported on device
+                                        }
                                     }
                                 }
                             }

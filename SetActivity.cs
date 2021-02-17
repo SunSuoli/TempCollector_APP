@@ -25,6 +25,8 @@ namespace TempCollector
             TextInputEditText v_max = FindViewById<TextInputEditText>(Resource.Id.V_max);
             TextInputEditText t_max = FindViewById<TextInputEditText>(Resource.Id.T_max);
 
+            TextInputEditText warn_temp = FindViewById<TextInputEditText>(Resource.Id.Warn_Temp);
+
             Button ok= FindViewById<Button>(Resource.Id.Ok);
             Button cancel = FindViewById<Button>(Resource.Id.Cancel);
 
@@ -33,28 +35,19 @@ namespace TempCollector
             t_min.Text = config.Read("Parameters/Calibration/T_min");
             v_max.Text = config.Read("Parameters/Calibration/V_max");
             t_max.Text = config.Read("Parameters/Calibration/T_max");
-
+            warn_temp.Text= config.Read("Parameters/Warn/Warn_Temp");
             ok.Click += (e, t) =>
             {
-
                 config.Update("Parameters/Calibration/V_min", v_min.Text);
                 config.Update("Parameters/Calibration/T_min", t_min.Text);
                 config.Update("Parameters/Calibration/V_max", v_max.Text);
                 config.Update("Parameters/Calibration/T_max", t_max.Text);
+                config.Update("Parameters/Warn/Warn_Temp", warn_temp.Text);
 
-                //var intent = new Intent(this, typeof(MainActivity));
-                //设置意图传递的参数
-                //intent.PutStringArrayListExtra("phone_numbers", phoneNumbers);
-                //StartActivity(intent);
                 Finish();
             };
             cancel.Click += (e, t) =>
             {
-
-                //var intent = new Intent(this, typeof(MainActivity));
-                //设置意图传递的参数
-                //intent.PutStringArrayListExtra("phone_numbers", phoneNumbers);
-                //StartActivity(intent);
                 Finish();
             };
 
