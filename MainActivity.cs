@@ -43,7 +43,7 @@ namespace TempCollector_APP
             ToggleButton connect = FindViewById<ToggleButton>(Resource.Id.connect);
             Button set= FindViewById<Button>(Resource.Id.set);
             TextView msg = FindViewById<TextView>(Resource.Id.msg);
-
+            Button sleep = FindViewById<Button>(Resource.Id.sleep);
 
             set.Click += (e, t) =>
              {
@@ -52,6 +52,17 @@ namespace TempCollector_APP
                  //设置意图传递的参数
                  //intent.PutStringArrayListExtra("phone_numbers", phoneNumbers);
                  StartActivity(intent);
+             };
+            sleep.Click += (e, t) =>
+             {
+                 try
+                 {
+                     client.TCP_Write("slp");
+                 }
+                 catch
+                 {
+
+                 }
              };
             config.Open();
             double v_min = Convert.ToDouble(config.Read("Parameters/Calibration/V_min"));
@@ -68,7 +79,7 @@ namespace TempCollector_APP
                 string data = "";
                 bool run = true;
                 int state = 0;
-
+                DateTime time_start = DateTime.Now;
                 var series = plotview.Model.Series[0] as LineSeries;
                 double y = 0.0;
                 string ESP_IP = "";//ESP-32的IP
@@ -82,7 +93,7 @@ namespace TempCollector_APP
                             udp.UDP_Read(out ESP_IP);
                             if (ESP_IP != "")
                             {
-                                //RunOnUiThread(() => { msg.Text = "发现设备：" + ESP_IP; });
+                                RunOnUiThread(() => { msg.Text = "发现设备：" + ESP_IP; });
                                 state = 1;
                             }
                             break;
@@ -98,7 +109,7 @@ namespace TempCollector_APP
 
                                 client.TCP_Connect(ESP_IP, 11066, 11060);
 
-                                //RunOnUiThread(() => { msg.Text = "连接设备：" + ESP_IP; });
+                                RunOnUiThread(() => { msg.Text = "连接设备：" + ESP_IP; });
                                 RunOnUiThread(() => { connect.Checked = true; });
                                 state = 2;
                             }
@@ -110,8 +121,11 @@ namespace TempCollector_APP
                         case 2://读取数据
                             try
                             {
-                                client.TCP_Write("app");//发送数据验证服务器是否在线
-                                
+                                TimeSpan ts = DateTime.Now - time_start;
+                                if(ts.TotalSeconds >= 3)//每隔3秒查看一次
+                                {
+                                    client.TCP_Write("app");//发送数据验证服务器是否在线
+                                }
                             }
                             catch
                             {

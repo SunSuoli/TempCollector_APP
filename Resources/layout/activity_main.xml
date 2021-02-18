@@ -11,6 +11,16 @@
         android:layout_width="match_parent"
         android:layout_height="250dp"
         android:id="@+id/relativeLayout1">
+        <Button
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="10dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:id="@+id/set"
+            android:background="@drawable/Dataset"
+        />
         <TextView
             android:text="36.5"
             android:layout_width="100dp"
@@ -88,11 +98,12 @@
     <Button
         android:layout_width="32dp"
         android:layout_height="32dp"
+        android:id="@+id/sleep"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="25dp"
+        android:layout_alignParentLeft="true"
         android:layout_marginLeft="25dp"
-        android:id="@+id/set"
-        android:background="@drawable/Dataset"
+        android:background="@drawable/Sleep"
         />
 
 </RelativeLayout>
