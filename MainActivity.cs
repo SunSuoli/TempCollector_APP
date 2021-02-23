@@ -40,8 +40,22 @@ namespace TempCollector_APP
             // Set our view from the "main" layout resource//设置界面来源
             SetContentView(Resource.Layout.activity_main);
 
-            udp.UDP_Open(et.GetLocalIp(),11067);//打开UDP连接
+            //打开UDP连接
+            udp.UDP_Open(et.GetLocalIp(),11067);
 
+            //读取设置参数
+            config.Open();
+            GlobalData.v_min = Convert.ToDouble(config.Read("Parameters/Calibration/V_min"));
+            GlobalData.t_min = Convert.ToDouble(config.Read("Parameters/Calibration/T_min"));
+            GlobalData.v_max = Convert.ToDouble(config.Read("Parameters/Calibration/V_max"));
+            GlobalData.t_max = Convert.ToDouble(config.Read("Parameters/Calibration/T_max"));
+            GlobalData.warn_temp = Convert.ToDouble(config.Read("Parameters/Warn/Warn_Temp"));
+
+            //初始化铃声
+            Android.Net.Uri notification = RingtoneManager.GetDefaultUri(RingtoneType.Alarm);
+            Ringtone r = RingtoneManager.GetRingtone(this, notification);
+
+            //关联控件
             TextView view = FindViewById<TextView>(Resource.Id.Receive);
             PlotView plotview = FindViewById<PlotView>(Resource.Id.Chart_View);
             ToggleButton start = FindViewById<ToggleButton>(Resource.Id.Start_Stop);
@@ -50,6 +64,7 @@ namespace TempCollector_APP
             TextView msg = FindViewById<TextView>(Resource.Id.msg);
             Button sleep = FindViewById<Button>(Resource.Id.sleep);
 
+            //设置
             set.Click += (e, t) =>
              {
 
@@ -58,6 +73,7 @@ namespace TempCollector_APP
                  //intent.PutStringArrayListExtra("phone_numbers", phoneNumbers);
                  StartActivity(intent);
              };
+            //休眠
             sleep.Click += (e, t) =>
              {
                  try
@@ -69,13 +85,7 @@ namespace TempCollector_APP
 
                  }
              };
-            config.Open();
-            GlobalData.v_min = Convert.ToDouble(config.Read("Parameters/Calibration/V_min"));
-            GlobalData.t_min = Convert.ToDouble(config.Read("Parameters/Calibration/T_min"));
-            GlobalData.v_max = Convert.ToDouble(config.Read("Parameters/Calibration/V_max"));
-            GlobalData.t_max = Convert.ToDouble(config.Read("Parameters/Calibration/T_max"));
-            GlobalData.warn_temp = Convert.ToDouble(config.Read("Parameters/Warn/Warn_Temp"));
-
+            
             plotview.Model = CreatePlotModel();
             plotview.SetCursorType(CursorType.ZoomRectangle);
 
@@ -128,7 +138,7 @@ namespace TempCollector_APP
                             try
                             {
                                 TimeSpan ts = DateTime.Now - time_start;
-                                if(ts.TotalSeconds >= 3)//每隔3秒查看一次
+                                if(ts.TotalSeconds >= 5)//每隔3秒查看一次
                                 {
                                     client.TCP_Write("app");//发送数据验证服务器是否在线
                                 }
@@ -144,7 +154,7 @@ namespace TempCollector_APP
                                 if (data != "" && start.Checked)
                                 {
                                     y = Calibration(Convert.ToDouble(data), GlobalData.v_min, GlobalData.t_min, GlobalData.v_max, GlobalData.t_max);
-                                    RunOnUiThread(() => { view.Text =y.ToString("f1") ; });//文本显示温度值
+                                    RunOnUiThread(() => { view.Text =y.ToString("f1") ; });//文本显示温度值，一位小数点
                                     try
                                     {
                                         series.Points.Add(new DataPoint(DateTimeAxis.ToDouble(DateTime.Now), y));
@@ -169,6 +179,7 @@ namespace TempCollector_APP
                                         {
                                             // Feature not supported on device
                                         }
+                                        r.Play();//打开铃声
                                     }
                                     else//关闭震动
                                     {
@@ -180,6 +191,7 @@ namespace TempCollector_APP
                                         {
                                             // Feature not supported on device
                                         }
+                                        r.Stop();//关闭铃声
                                     }
                                 }
                             }
