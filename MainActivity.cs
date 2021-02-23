@@ -117,7 +117,7 @@ namespace TempCollector_APP
                             try
                             {
                                 RunOnUiThread(() => { start.Checked=false; });
-                                RunOnUiThread(() => { connect.Checked = false; });
+                                //RunOnUiThread(() => { connect.Checked = false; });//取消自动停止采集，防止断线重连无法报警
 
                                 //client.TCP_Close_Client();
                                 //client.TCP_Close_Stream();
@@ -165,34 +165,30 @@ namespace TempCollector_APP
                                     {
 
                                     }
-                                    if (y >= GlobalData.warn_temp)//打开震动
+                                    if (y >= GlobalData.warn_temp)
                                     {
                                         try
                                         {
-                                            // Use default vibration length
-                                            //Vibration.Vibrate();
-
-                                            // Or use specified time
                                             var duration = TimeSpan.FromSeconds(0.5);
-                                            Vibration.Vibrate(duration);
+                                            Vibration.Vibrate(duration);//打开震动
+                                            r.Play();//打开铃声
                                         }
                                         catch
                                         {
                                             // Feature not supported on device
                                         }
-                                        r.Play();//打开铃声
                                     }
-                                    else//关闭震动
+                                    else
                                     {
                                         try
                                         {
-                                            Vibration.Cancel();
+                                            Vibration.Cancel();//关闭震动
+                                            r.Stop();//关闭铃声
                                         }
                                         catch
                                         {
                                             // Feature not supported on device
                                         }
-                                        r.Stop();//关闭铃声
                                     }
                                 }
                             }
