@@ -1,18 +1,18 @@
 ﻿
 using Android.App;
-using Android.Content;
 using Android.OS;
 using Android.Support.Design.Widget;
 using Android.Widget;
 using Custom_Files;
-using TempCollector_APP;
+using System;
+using TempCollector.Classes;
 
 namespace TempCollector
 {
     [Activity(Label = "set")]
     public class SetActivity : Activity
     {
-        XML config = new XML();
+        readonly XML config = new XML();
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -43,6 +43,12 @@ namespace TempCollector
                 config.Update("Parameters/Calibration/V_max", v_max.Text);
                 config.Update("Parameters/Calibration/T_max", t_max.Text);
                 config.Update("Parameters/Warn/Warn_Temp", warn_temp.Text);
+
+                GlobalData.v_min = Convert.ToDouble(config.Read("Parameters/Calibration/V_min"));
+                GlobalData.t_min = Convert.ToDouble(config.Read("Parameters/Calibration/T_min"));
+                GlobalData.v_max = Convert.ToDouble(config.Read("Parameters/Calibration/V_max"));
+                GlobalData.t_max = Convert.ToDouble(config.Read("Parameters/Calibration/T_max"));
+                GlobalData.warn_temp = Convert.ToDouble(config.Read("Parameters/Warn/Warn_Temp"));
 
                 Finish();
             };

@@ -67,6 +67,7 @@
   <ItemGroup>
     <Compile Include="Classes\Communiations.cs" />
     <Compile Include="Classes\Files.cs" />
+    <Compile Include="Classes\GlobalData.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

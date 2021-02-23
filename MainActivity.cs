@@ -1,9 +1,11 @@
 ﻿using Android.App;
 using Android.Content;
+using Android.Media;
 using Android.OS;
 using Android.Runtime;
 using Android.Support.V7.App;
 using Android.Widget;
+using Android.Net;
 using Custom_Communiations;
 using Custom_Files;
 using OxyPlot;
@@ -15,18 +17,21 @@ using System.Threading;
 using TempCollector;
 using Xamarin.Essentials;
 using Resource = TempCollector.Resource;
+using Android.Support.V4.App;
+using Android.Graphics;
+using TempCollector.Classes;
 
 namespace TempCollector_APP
 {
     [Activity(Label = "@string/app_name", Theme = "@style/AppTheme", MainLauncher = true)]
     public class MainActivity : AppCompatActivity
     {
-        TCP client = new TCP();
-        UDP udp = new UDP();
-        Enthernet et = new Enthernet();
+        readonly TCP client = new TCP();
+        readonly UDP udp = new UDP();
+        readonly Enthernet et = new Enthernet();
 
-        XML config = new XML(); 
-        
+        readonly XML config = new XML();
+
         protected override void OnCreate(Bundle savedInstanceState)
         {
             
@@ -65,11 +70,11 @@ namespace TempCollector_APP
                  }
              };
             config.Open();
-            double v_min = Convert.ToDouble(config.Read("Parameters/Calibration/V_min"));
-            double t_min = Convert.ToDouble(config.Read("Parameters/Calibration/T_min"));
-            double v_max = Convert.ToDouble(config.Read("Parameters/Calibration/V_max"));
-            double t_max = Convert.ToDouble(config.Read("Parameters/Calibration/T_max"));
-            double warn_temp = Convert.ToDouble(config.Read("Parameters/Warn/Warn_Temp"));
+            GlobalData.v_min = Convert.ToDouble(config.Read("Parameters/Calibration/V_min"));
+            GlobalData.t_min = Convert.ToDouble(config.Read("Parameters/Calibration/T_min"));
+            GlobalData.v_max = Convert.ToDouble(config.Read("Parameters/Calibration/V_max"));
+            GlobalData.t_max = Convert.ToDouble(config.Read("Parameters/Calibration/T_max"));
+            GlobalData.warn_temp = Convert.ToDouble(config.Read("Parameters/Warn/Warn_Temp"));
 
             plotview.Model = CreatePlotModel();
             plotview.SetCursorType(CursorType.ZoomRectangle);
@@ -79,6 +84,7 @@ namespace TempCollector_APP
                 string data = "";
                 bool run = true;
                 int state = 0;
+                
                 DateTime time_start = DateTime.Now;
                 var series = plotview.Model.Series[0] as LineSeries;
                 double y = 0.0;
@@ -103,8 +109,8 @@ namespace TempCollector_APP
                                 RunOnUiThread(() => { start.Checked=false; });
                                 RunOnUiThread(() => { connect.Checked = false; });
 
-                                client.TCP_Close_Client();
-                                client.TCP_Close_Stream();
+                                //client.TCP_Close_Client();
+                                //client.TCP_Close_Stream();
 
 
                                 client.TCP_Connect(ESP_IP, 11066, 11060);
@@ -137,7 +143,7 @@ namespace TempCollector_APP
                                 data = client.TCP_Read(4, 10);//10ms内接收4字节，字节内容为“XX.X”
                                 if (data != "" && start.Checked)
                                 {
-                                    y = Calibration(Convert.ToDouble(data), v_min, t_min, v_max, t_max);
+                                    y = Calibration(Convert.ToDouble(data), GlobalData.v_min, GlobalData.t_min, GlobalData.v_max, GlobalData.t_max);
                                     RunOnUiThread(() => { view.Text =y.ToString("f1") ; });//文本显示温度值
                                     try
                                     {
@@ -148,15 +154,15 @@ namespace TempCollector_APP
                                     {
 
                                     }
-                                    if (y >= warn_temp)//打开震动
+                                    if (y >= GlobalData.warn_temp)//打开震动
                                     {
                                         try
                                         {
                                             // Use default vibration length
-                                            Vibration.Vibrate();
+                                            //Vibration.Vibrate();
 
                                             // Or use specified time
-                                            var duration = TimeSpan.FromSeconds(2);
+                                            var duration = TimeSpan.FromSeconds(0.5);
                                             Vibration.Vibrate(duration);
                                         }
                                         catch
@@ -256,7 +262,6 @@ namespace TempCollector_APP
             return plotModel;
 
         }
-
         public double Calibration(double X,double Xmin,double Ymin,double Xmax,double Ymax)
         {
             return (X - Xmin) * (Ymax - Ymin) / (Xmax - Xmin) + Ymin;
