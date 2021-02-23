@@ -116,8 +116,8 @@ namespace TempCollector_APP
                         case 1://尝试连接服务器
                             try
                             {
-                                RunOnUiThread(() => { start.Checked=false; });
-                                //RunOnUiThread(() => { connect.Checked = false; });//取消自动停止采集，防止断线重连无法报警
+                                //RunOnUiThread(() => { start.Checked=false; });//取消自动停止采集，防止断线重连无法报警
+                                RunOnUiThread(() => { connect.Checked = false; });
 
                                 //client.TCP_Close_Client();
                                 //client.TCP_Close_Stream();
