@@ -52,7 +52,7 @@ namespace TempCollector_APP
             GlobalData.warn_temp = Convert.ToDouble(config.Read("Parameters/Warn/Warn_Temp"));
 
             //初始化铃声
-            Android.Net.Uri notification = RingtoneManager.GetDefaultUri(RingtoneType.Alarm);
+            Android.Net.Uri notification = RingtoneManager.GetDefaultUri(RingtoneType.Alarm);//使用闹钟声音
             Ringtone r = RingtoneManager.GetRingtone(this, notification);
 
             //关联控件
@@ -138,9 +138,10 @@ namespace TempCollector_APP
                             try
                             {
                                 TimeSpan ts = DateTime.Now - time_start;
-                                if(ts.TotalSeconds >= 5)//每隔3秒查看一次
+                                if(ts.TotalSeconds >= 3)//每隔3秒查看一次
                                 {
                                     client.TCP_Write("app");//发送数据验证服务器是否在线
+                                    time_start = DateTime.Now;
                                 }
                             }
                             catch
