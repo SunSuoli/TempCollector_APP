@@ -5,7 +5,6 @@ using Android.OS;
 using Android.Runtime;
 using Android.Support.V7.App;
 using Android.Widget;
-using Android.Net;
 using Custom_Communiations;
 using Custom_Files;
 using OxyPlot;
@@ -15,11 +14,9 @@ using OxyPlot.Xamarin.Android;
 using System;
 using System.Threading;
 using TempCollector;
+using TempCollector.Classes;
 using Xamarin.Essentials;
 using Resource = TempCollector.Resource;
-using Android.Support.V4.App;
-using Android.Graphics;
-using TempCollector.Classes;
 
 namespace TempCollector_APP
 {
