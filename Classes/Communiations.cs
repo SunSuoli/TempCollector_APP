@@ -139,7 +139,7 @@ namespace Custom_Communiations
         }
         public string UDP_Read(out string IP)//从任意远程目标监听数据
         {
-            string data = "";
+            string data;
             
             if (UDPHandle.Available > 0)//利用Available属性可以使阻塞式IO当做不阻塞使用
             {

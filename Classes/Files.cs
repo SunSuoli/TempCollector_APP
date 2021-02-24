@@ -5,9 +5,9 @@ namespace Custom_Files
 {
     public class XML
     {
-        string dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "Config.xml");
+        readonly string dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "Config.xml");
 
-        XmlDocument document = new XmlDocument();
+        readonly XmlDocument document = new XmlDocument();
         
         public void Open()
         {
